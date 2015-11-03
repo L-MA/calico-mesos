@@ -1,10 +1,10 @@
 # Deploying a Mesos Cluster with Calico on CentOS7
-In these instructions, we will set up a Mesos Cluster with Calico Networking on bare-metal CentOS7 using RPMs built by [net-modules](https://github.com/mesosphere/net-modules). These RPMs conveniently package Mesos with compiled net-modules code.
+In this guide, we will set up a Mesos Cluster with Calico Networking on bare-metal CentOS7 using RPMs built with [net-modules](https://github.com/mesosphere/net-modules). These RPMs conveniently package Mesos with compiled net-modules libraries.
 
 ## Preparation
 Zookeeper and etcd serve as the backend datastores for Mesos and Calico, respectively. Most Mesos clusters will run these services outside of their core Mesos cluster, seperate from the Masters and Agents which read from them. 
 
-For a quick and simple proof-of-concept, we'll walk through running one instance of both etcd and zookeeper as Docker containers on our Mesos-Master. This introduces a dependency on Docker by our Master. Since Calico only requires Docker on each Slave, users who are running etcd and Zookeeper elsewhere can install Docker on each Slave and then skip directly to [Prepare Each Host](#prepare-each-host)
+For a quick and simple proof-of-concept, we'll walk through running one instance of both etcd and zookeeper as Docker containers on our Mesos-Master. This introduces a dependency on Docker by our Master. Since Calico Networking with Mesos only requires Docker on each Agent, users who are running etcd and Zookeeper elsewhere can install Docker on each Agent and then skip directly to [Prepare Each Host](#prepare-each-host)
 
 ### Prepare External Services
 #### Docker
@@ -148,7 +148,7 @@ To obtain the Calico files, you will need `wget` installed. If you haven't alrea
     $ sudo mv calico_mesos /calico/calico_mesos
 
 ### Create the modules.json Configuration File
-To enable Calico networking in mesos, you must create a `modules.json` file. When provided to the mesos slave process, this file will connect Mesos with the Netmodules libraries as well as the calico networking plugin, allowing Calico to receive Networking Events from Mesos.
+To enable Calico networking in mesos, you must create a `modules.json` file. When provided to the Mesos Agent process, this file will connect Mesos with the Netmodules libraries as well as the calico networking plugin, allowing Calico to receive Networking Events from Mesos.
 
     $ cat > modules.json <<EOF
     {
