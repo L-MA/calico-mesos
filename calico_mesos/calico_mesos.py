@@ -17,7 +17,7 @@ import errno
 from pycalico import netns
 from pycalico.ipam import IPAMClient
 from pycalico.datastore import Rules, Rule
-from pycalico.block import AlreadyAssignedError
+from pycalico.block import AlreadyAssignedError, NoHostAffinityWarning
 from netaddr import IPAddress, AddrFormatError
 import json
 import logging
@@ -507,8 +507,13 @@ def _allocate(num_ipv4, num_ipv6, hostname, uid):
         "error": None  # Not None indicates error and contains error message.
     }
     """
-    result = datastore.auto_assign_ips(num_ipv4, num_ipv6, uid, {},
-                                       hostname=HOSTNAME)
+    try:
+        result = datastore.auto_assign_ips(num_ipv4, num_ipv6, uid, {},
+                                           hostname=HOSTNAME)
+    except NoHostAffinityWarning:
+        raise IsolatorException("Unable to auto assign %s IPv4 and %s IPv6 "
+                                "addresses on host %s" % (num_ipv4, num_ipv6, HOSTNAME))
+
     ipv4_strs = [str(ip) for ip in result[0]]
     ipv6_strs = [str(ip) for ip in result[1]]
     result_json = {"ipv4": ipv4_strs,
